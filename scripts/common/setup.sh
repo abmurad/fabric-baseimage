@@ -30,9 +30,9 @@ export GOROOT="/opt/go"
 # Install Golang
 # ----------------------------------------------------------------
 mkdir -p $GOPATH
-ARCH=`uname -m | sed 's|i686|386|' | sed 's|x86_64|amd64|'`
-BINTARGETS="x86_64 ppc64le s390x"
-GO_VER=1.9.2
+ARCH=arm64
+BINTARGETS="x86_64 ppc64le s390x aarch64"
+GO_VER=1.11.4
 
 # Install Golang binary if found in BINTARGETS
 if echo $BINTARGETS | grep -q `uname -m`; then
@@ -43,17 +43,17 @@ if echo $BINTARGETS | grep -q `uname -m`; then
    chmod 775 $GOROOT
 # Otherwise, build Golang from source
 else
-   # Install Golang 1.6 binary as a bootstrap to compile the Golang GO_VER source
-   apt-get -y install golang-1.6
+   # Install Golang 1.11 binary as a bootstrap to compile the Golang GO_VER source
+   apt-get -y install golang-1.11
 
    cd /tmp
    wget --quiet --no-check-certificate https://storage.googleapis.com/golang/go${GO_VER}.src.tar.gz
    tar -xzf go${GO_VER}.src.tar.gz -C /opt
 
    cd $GOROOT/src
-   export GOROOT_BOOTSTRAP="/usr/lib/go-1.6"
+   export GOROOT_BOOTSTRAP="/usr/lib/go-1.11"
    ./make.bash
-   apt-get -y remove golang-1.6
+   apt-get -y remove golang-1.11
 fi
 
 PATH=$GOROOT/bin:$GOPATH/bin:$PATH
@@ -69,7 +69,7 @@ EOF
 # ----------------------------------------------------------------
 NODE_VER=8.9.4
 
-ARCH=`uname -m | sed 's|i686|x86|' | sed 's|x86_64|x64|'`
+ARCH=arm64
 NODE_PKG=node-v$NODE_VER-linux-$ARCH.tar.gz
 SRC_PATH=/tmp/$NODE_PKG
 
@@ -91,24 +91,29 @@ PROTOBUF_VER=3.1.0
 PROTOBUF_PKG=v$PROTOBUF_VER.tar.gz
 
 cd /tmp
-wget --quiet https://github.com/google/protobuf/archive/$PROTOBUF_PKG
-tar xpzf $PROTOBUF_PKG
-cd protobuf-$PROTOBUF_VER
-./autogen.sh
-# NOTE: By default, the package will be installed to /usr/local. However, on many platforms, /usr/local/lib is not part of LD_LIBRARY_PATH.
-# You can add it, but it may be easier to just install to /usr instead.
-#
-# To do this, invoke configure as follows:
-#
-# ./configure --prefix=/usr
-#
-#./configure
-./configure --prefix=/usr
+#wget --quiet https://github.com/google/protobuf/archive/$PROTOBUF_PKG
+#tar xpzf $PROTOBUF_PKG
+#cd protobuf-$PROTOBUF_VER
+#./autogen.sh
+## NOTE: By default, the package will be installed to /usr/local. However, on many platforms, /usr/local/lib is not part of LD_LIBRARY_PATH.
+## You can add it, but it may be easier to just install to /usr instead.
+##
+## To do this, invoke configure as follows:
+##
+## ./configure --prefix=/usr
+##
+##./configure
+#./configure --prefix=/usr
 
-make
-make check
-make install
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+#make
+#make check
+#make install
+#export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+curl -OL https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-aarch_64.zip
+unzip protoc-3.6.1-linux-aarch_64.zip -d protoc3
+mv protoc3/bin/* /usr/local/bin
+mv protoc3/include/* /usr/local/include
+
 cd ~/
 
 # Make our versioning persistent
