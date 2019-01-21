@@ -30,7 +30,7 @@ export GOROOT="/opt/go"
 # Install Golang
 # ----------------------------------------------------------------
 mkdir -p $GOPATH
-ARCH=arm64
+ARCH=aarch64
 BINTARGETS="x86_64 ppc64le s390x aarch64"
 GO_VER=1.11.4
 
@@ -69,8 +69,7 @@ EOF
 # ----------------------------------------------------------------
 NODE_VER=8.9.4
 
-ARCH=arm64
-NODE_PKG=node-v$NODE_VER-linux-$ARCH.tar.gz
+NODE_PKG=node-v$NODE_VER-linux-arm64.tar.gz
 SRC_PATH=/tmp/$NODE_PKG
 
 # First remove any prior packages downloaded in case of failure
